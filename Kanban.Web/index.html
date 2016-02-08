@@ -19,20 +19,29 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="list in lists">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="list in data.lists">
                 <div class="panel panel-primary" id="listCards">
                     <div class="panel-heading">
                         {{list.Name}}
-                        <button class="close" type="button" ng-click="deleteList(list)">
+                        <button class="close" type="button" ng-click="removeList(list)">
                             <i class="fa fa-times"></i>
                         </button>
                     </div>
                     <div class="panel-body" style="overflow:auto" id="theCards">
                         <div class="list-cards" ng-repeat="card in list.cards">
                             <!-- ng-repeat for cards in list-->
-                            <button class="btn btn-default" type="button" id="cards">
                                 {{card.Text}}
-                            </button>
+                                <a class="text pull-right" ng-click="removeList(card)">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="list.newCard.Text" placeholder="Add Card.." />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-click="addCard(list)">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </span>
                         </div>
                     </div>
                 </div>

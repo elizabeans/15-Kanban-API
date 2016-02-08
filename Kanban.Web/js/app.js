@@ -5,26 +5,31 @@ angular.module('kanban').value('apiUrl', 'http://localhost:64124/api');
 // The Controller
 angular.module('kanban').controller('IndexController', function ($scope, $resource, apiUrl) {
 
-    var ListResource = $resource(apiUrl + '/lists/:listId', { listId: '@id' },
+    var ListResource = $resource(apiUrl + '/lists/:ListId', { ListId: '@ListId' });
+    
+    var CardsResource = $resource(apiUrl + '/cards/:CardId', { CardId: '@CardId' },
         {
             'cards': {
-                url: apiUrl + '/lists/:listId/cards',
                 method: 'GET',
+                url: apiUrl + '/lists/:ListId/cards',
                 isArray: true
             }
         });
-    
+
+    $scope.data = {
+        newList: {},
+        newCard: {}
+    }
 
     function activate() {
         ListResource.query(function (data) {
-            $scope.lists = data;
-            $scope.lists.forEach(function (list) {
-                list.cards = ListResource.cards({ listId: list.ListId });
+            $scope.data.lists = data;
+
+            $scope.data.lists.forEach(function (list) {
+                list.cards = CardsResource.cards({ ListId: list.ListId });
             });
         });
     }
-
-    $scope.newList = {};
 
     $scope.addList = function () {
         ListResource.save($scope.newList, function () {
@@ -33,10 +38,21 @@ angular.module('kanban').controller('IndexController', function ($scope, $resour
         });
     };
 
-    $scope.deleteList = function (list) {
-        $scope.currentList = list;
-        ListResource.remove($scope.currentList, function () {
-            alert('List deleted!');
+    $scope.addCard = function (list) {
+        list.newCard.ListId = list.ListId;
+        CardsResource.save(list.newCard, function (data) {
+            activate();
+        });
+    };
+
+    $scope.removeList = function (list) {
+        list.$remove(function (data) {
+            activate();
+        });
+    };
+
+    $scope.removeCard = function (card) {
+        card.$remove(function (data) {
             activate();
         });
     };
